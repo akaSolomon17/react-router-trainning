@@ -8,11 +8,13 @@ const LazyCommunityPage = React.lazy(() => import('./pages/Community'))
 const LazyTutorialPage = React.lazy(() => import('./pages/Tutorial'))
 const LazyDocsPage = React.lazy(() => import('./pages/Docs'))
 const LazyGettingStarted = React.lazy(() => import('./pages/GettingStarted'))
+
 import './App.css'
 
 import { Route, Routes } from 'react-router-dom'
 import Loader from './components/Loading/Loader'
 import NotFound from './components/NotFound/NotFound'
+import FormYup from './pages/FormYup'
 
 function App() {
 
@@ -28,6 +30,7 @@ function App() {
             <Route path='/tutorial' element={<LazyTutorialPage />} />
             <Route path='/blog' element={<LazyBlogPage />} />
             <Route path='/community' element={<LazyCommunityPage />} />
+            <Route path='/react-hook-form' element={<FormYup />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </React.Suspense>

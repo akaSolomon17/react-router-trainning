@@ -43,7 +43,8 @@
 .blog-page,
 .document-page,
 .home-page,
-.community-page {
+.community-page,
+.form-yup {
   margin-right: 10rem;
   font-size: 50px;
   padding-top: 5rem;

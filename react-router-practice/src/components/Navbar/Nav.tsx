@@ -31,7 +31,8 @@ function Nav() {
                             <NavLink className="nav-link me-3 ms-5" aria-current="page" to="/docs">Docs</NavLink>
                             <NavLink className="nav-link me-3" to="/tutorial">Tutorial</NavLink>
                             <NavLink className="nav-link me-3" to="/blog">Blog</NavLink>
-                            <NavLink className="nav-link" to="/community">Community</NavLink>
+                            <NavLink className="nav-link me-3" to="/community">Community</NavLink>
+                            <NavLink className="nav-link" to="/react-hook-form">Form & Yup</NavLink>
                         </div>
                     </div>
                     <form className="d-flex align-items-center" role="search">
