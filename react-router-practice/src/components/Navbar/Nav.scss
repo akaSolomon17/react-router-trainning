@@ -1,0 +1,35 @@
+.navbar{
+  background-color: #20232A !important;
+  display: flex;
+  align-items: center;
+  color: white;
+  .logo-link{
+    text-decoration: none ;
+    color: #00D8FF;
+  }
+  .container-fluid{
+    padding: 0 8rem 0 11rem;
+    .link{
+      color: white;
+      .git{
+        width: max-content;
+      }
+    }
+    .nav-link:hover{
+      color: #00D8FF;
+    }
+    .nav-link.active{
+      color: #00D8FF;
+    }
+    .link{
+      a{
+        font-weight: 400;
+        text-decoration: none;
+        color: white;
+      }
+      a:hover{
+        color: #00D8FF;
+      }
+    }
+  }
+}
