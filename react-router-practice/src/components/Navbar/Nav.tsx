@@ -32,7 +32,8 @@ function Nav() {
                             <NavLink className="nav-link me-3" to="/tutorial">Tutorial</NavLink>
                             <NavLink className="nav-link me-3" to="/blog">Blog</NavLink>
                             <NavLink className="nav-link me-3" to="/community">Community</NavLink>
-                            <NavLink className="nav-link" to="/react-hook-form">Form & Yup</NavLink>
+                            <NavLink className="nav-link me-3" to="/react-hook-form">Form & Yup</NavLink>
+                            <NavLink className="nav-link" to="/register">Register</NavLink>
                         </div>
                     </div>
                     <form className="d-flex align-items-center" role="search">

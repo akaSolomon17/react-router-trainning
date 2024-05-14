@@ -15,6 +15,7 @@ import { Route, Routes } from 'react-router-dom'
 import Loader from './components/Loading/Loader'
 import NotFound from './components/NotFound/NotFound'
 import FormYup from './pages/FormYup'
+import Register from './pages/Register'
 
 function App() {
 
@@ -31,6 +32,7 @@ function App() {
             <Route path='/blog' element={<LazyBlogPage />} />
             <Route path='/community' element={<LazyCommunityPage />} />
             <Route path='/react-hook-form' element={<FormYup />} />
+            <Route path='/register' element={<Register />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </React.Suspense>

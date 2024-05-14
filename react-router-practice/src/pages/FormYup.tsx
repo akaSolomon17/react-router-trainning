@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSearchParams } from 'react-router-dom';
 
@@ -8,21 +8,37 @@ type FormData = {
 }
 
 function FormYup() {
-    const { register, setValue, getValues } = useForm<FormData>()
+    const { register, setValue, getValues } = useForm<FormData>({
+        defaultValues: {
+            userName: "",
+            password: ""
+        }
+    })
     const [searchParams, setSearchParams] = useSearchParams();
-    console.log(searchParams);
+    console.log(Object.fromEntries(searchParams));
 
     const onSubmit = () => {
-        console.log('Form submitted')
+        console.log('Form submitted') // Chừa ra để làm logic cho submit
     }
-    window.addEventListener("load", () => {
-        const params = new URLSearchParams(document.location.search);
-        const userNameParams = params.get("username");
-        const passwordParams = params.get("password");
+
+    // Không nên sử dụng addEventListener sẽ bị dump method trong Ram => dùng useEffect
+    // window.addEventListener("load", () => {
+    //     const params = new URLSearchParams(document.location.search);
+    //     const userNameParams = params.get("username");
+    //     const passwordParams = params.get("password");
+
+    //     setValue("userName", userNameParams || "")
+    //     setValue("password", passwordParams || "")
+    // })
+
+    useEffect(() => {
+        const userNameParams = searchParams.get("username"),
+            passwordParams = searchParams.get("password");
 
         setValue("userName", userNameParams || "")
         setValue("password", passwordParams || "")
-    })
+    }, [])
+
     return (
         <>
             <h1 className='form-yup w-50'>Form & Yup practice
@@ -35,11 +51,7 @@ function FormYup() {
                         <button
                             type="button"
                             onClick={() => {
-                                setSearchParams(params => {
-                                    params.set("username", getValues("userName"))
-                                    params.set("password", getValues("password"))
-                                    return params;
-                                })
+                                setSearchParams({ username: getValues('userName'), password: getValues('password') })
                             }}
                         >
                             Submit
@@ -51,8 +63,8 @@ function FormYup() {
                                 setValue("userName", "");
                                 setValue("password", "");
                                 setSearchParams(params => {
-                                    params.delete("username")
-                                    params.delete("password")
+                                    params.delete('username');
+                                    params.delete('password');
                                     return params;
                                 })
                             }}
@@ -60,7 +72,7 @@ function FormYup() {
                             Reset
                         </button>
                     </form>
-                </div></h1>
+                </div></h1 >
 
         </>
     )

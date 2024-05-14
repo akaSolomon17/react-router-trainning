@@ -1,0 +1,40 @@
+.register-form {
+    display: flex;
+    max-height: 1280px;
+    min-height: 800px;
+    .form-group{
+        input, select{
+            background-color: white;
+            border: 1.5px solid black;
+            height: 58px;
+            border-radius: 5px;
+            align-self: center;
+        }
+        label{
+            margin: 0 0 0.3rem 0.1rem;
+            font-weight: 400;
+            width: 75%;
+        }
+        p{
+            margin: 0.2rem 0 0 0.1rem;
+            color: red;
+            font-size: 14px;
+        }
+        .input-group{
+           input{
+            border-top-right-radius: 5px !important ;
+            border-bottom-right-radius: 5px !important ;
+           }
+        }
+        .input-group-file{
+            input{
+
+                height: 37px;
+            }
+        }
+        .form-text{
+            margin: 0.3rem 0 0 0.1rem;
+        }
+        
+    }
+}
