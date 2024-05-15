@@ -1,19 +1,23 @@
 import React from 'react'
 
 import './index.scss'
-import { useForm } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
 import * as yup from "yup"
 import { yupResolver } from '@hookform/resolvers/yup'
 
+import { LuPlusSquare } from "react-icons/lu";
+import { FaRegTrashAlt } from "react-icons/fa";
 // Upload image
-// validate: size<150kb, name <= 10 char, dimension [width, height] valid trong các giá trị sau [180, 180], [300, 300], [1200, 628]
+// validate: size < 150kb, name <= 10 char ✅
 
-// cặp input(text & replaceText): Cho 1 button "+" để thêm 1 hoặc nhiều cặp input, mỗi input validate sao cho cả 2 dc để trống, nhưng nếu 1 trong hai có giá trị
-// thì phải required phần còn lại.
+// cặp input(text & replaceText): Cho 1 button "+" để thêm 1 hoặc nhiều cặp input. usefieldArray
+// text: bất kì value
+// replaceText: validate 1 số nguyên > 1 & < 1000 if not validate number || ""
 
-const regexImage = /([^\\s]+(\\.(jpe?g|png|jpg|gif|bmp|JPG|JPEG|PNG|GIF))$)/,
-    regexEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-    password = /[a-zA-Z]/
+
+const regexEmail = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    regexPassword = /[a-zA-Z]/,
+    regexPhoneNumber = /[1-9]\d{8}/
 
 type Inputs = {
     fullName: string,
@@ -22,9 +26,18 @@ type Inputs = {
     country: string,
     password: string,
     confirmPassword: string,
-    image: string
+    image: FileList,
+    dynamicInputs: IDynamicInputs[]
 }
 
+interface IDynamicInputs {
+    text: string,
+    textReplace?: string | number
+}
+const emptyDynamicInputs: IDynamicInputs = {
+    text: '',
+    textReplace: '',
+}
 const schema = yup
     .object()
     .shape({
@@ -32,38 +45,72 @@ const schema = yup
             .required("Full Name is required!"),
 
         email: yup.string()
-            .matches(regexEmail, "Email is not valid!")
-            .required("Email is required!"),
+            .required("Email is required!")
+            .matches(regexEmail, "Email is not valid!"),
+
 
         mobilePhone: yup.string()
-            .matches(/^\\([0-9]{3})\\?[-.\\s]?([0-9]{3})[-.\\s]?([0-9]{4})$/, "Phone number is not valid!")
-            .required("Phone number is required!"),
+            .required("Phone number is required!")
+            .matches(regexPhoneNumber, "Phone number is not valid!"),
 
         country: yup.string()
             .required("Please select a Country!"),
 
         password: yup.string()
+            .required("Password is required!")
             .min(8, 'Password is too short - should be 8 chars minimum.')
-            .matches(password, 'Password can only contain Latin letters.')
-            .required("Password is required!"),
+            .matches(regexPassword, 'Password can only contain Latin letters.'),
 
         confirmPassword: yup.string()
             .oneOf([yup.ref('password'), undefined])
             .required("Confirm password is required!"),
-        image: yup.string().matches(regexImage, "Please upload a valid file!").required("Your image is required, please upload!")
+
+        image: yup.mixed<FileList>()
+            .required("Your image is required, please upload!")
+            .test("isValidFileName", "File name must be less than 10 characters", function (value) { // Validate name file
+                if (value && value[0]) {
+                    const fileNameWithoutExtension = value[0].name.split('.').slice(0, -1).join('.')
+                    return fileNameWithoutExtension.length <= 10;
+                }
+                else return this.createError({ message: "Please upload your image first!" })
+            })
+            .test("isValidFileSize", "Image only accepts files under 150KB", value => { //Validate size image file
+                return value && value[0] && value[0].size <= 150000;
+            }),
+        text: yup
+            .string()
+            .required("Please enter this field!"),
+        textReplace: yup
+            .mixed<IDynamicInputs>()
+            .required("Please enter this field!"),
+        dynamicInputs: yup.array().test(values => console.log('values', values))
+
     })
+
 
 
 
 function Register() {
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<Inputs>({
-        resolver: yupResolver(schema)
-    })
-    console.log(errors.email);
+    const {
+        control,
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset } = useForm<Inputs>({
+            defaultValues: {
+                dynamicInputs: [emptyDynamicInputs]
+            },
+            mode: "onSubmit",
+            resolver: yupResolver(schema)
 
-    const submitHandler = (data: unknown) => {
+        })
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "dynamicInputs"
+    });
+
+    const submitHandler = (data: Inputs) => {
         console.log({ data });
-
         reset();
     }
 
@@ -109,7 +156,7 @@ function Register() {
 
                     {/* Select Country */}
                     <div className="mb-3">
-                        <select {...register("country")} className='form-select w-100'>
+                        <select className='form-select w-100' {...register("country")}>
                             <option disabled selected value=""> -- Select your Country -- </option>
                             <option value="1">Đà Nẵng</option>
                             <option value="2">Hà Nội</option>
@@ -138,13 +185,46 @@ function Register() {
 
                     {/* Upload image */}
                     <div className="input-group-file mt-2 mb-4">
-                        <input type="file" accept=".jpg, .png, .jpeg, .gif|image/*" className="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" />
+                        <input type="file" accept=".jpg, .png, .jpeg, .gif|image/*" className="form-control"
+                            id="inputGroupFile" aria-describedby="inputGroupFileAddon" aria-label="Upload" {...register("image")} />
+                        <p>{errors.image?.message}</p>
                     </div>
-
-
+                    <button
+                        type='button'
+                        onClick={() => append(emptyDynamicInputs)}
+                        className='add-input-btn rounded mb-3 w-100'
+                    >
+                        <LuPlusSquare />
+                    </button>
+                    {/* Dynamic input & validate */}
+                    {fields.map((field, index) => (
+                        <div key={field.id} className="couple-input mb-3 ">
+                            <div className='d-flex flex-rows align-items-center'>
+                                <div className="form-floating w-50">
+                                    <input key={field.id} type="text" className="form-control" id="floatingInput" placeholder="ext" {...register(`dynamicInputs.${index}.text` as const)} />
+                                    <label htmlFor="floatingInput">Text</label>
+                                    <p>{errors.dynamicInputs?.[index]?.text?.message ? "errorText" : ""}</p>
+                                </div>
+                                <div className="form-floating w-75 ms-3  ">
+                                    <input key={field.id} type="text" className="form-control" id="floatingPassword" placeholder="Text Replace" {...register(`dynamicInputs.${index}.textReplace` as const)} />
+                                    <label htmlFor="floatingPassword">Text Replace</label>
+                                    <p>{errors.dynamicInputs?.[index]?.textReplace?.message ? "errorReplace" : ""}</p>
+                                </div>
+                                <div>
+                                    <button
+                                        title='Remove input'
+                                        className='delete-input-btn ms-3'
+                                        onClick={() => remove(index)}
+                                    >
+                                        <FaRegTrashAlt />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                     {/* Submit */}
                     <button
-                        className='align-self-center w-100 mt-1'
+                        className='w-100 mt-1'
                         type="submit"
                     >
                         Submit

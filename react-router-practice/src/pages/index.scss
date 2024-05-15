@@ -1,6 +1,5 @@
 .register-form {
     display: flex;
-    max-height: 1280px;
     min-height: 800px;
     .form-group{
         input, select{
@@ -28,12 +27,17 @@
         }
         .input-group-file{
             input{
-
                 height: 37px;
             }
         }
         .form-text{
             margin: 0.3rem 0 0 0.1rem;
+        }
+        .couple-input{
+            .add-input-btn, .delete-input-btn{
+                font-size: 15px;
+                border-radius: 3px;
+            }
         }
         
     }
