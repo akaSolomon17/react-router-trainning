@@ -21,23 +21,13 @@ function FormYup() {
         console.log('Form submitted') // Chừa ra để làm logic cho submit
     }
 
-    // Không nên sử dụng addEventListener sẽ bị dump method trong Ram => dùng useEffect
-    // window.addEventListener("load", () => {
-    //     const params = new URLSearchParams(document.location.search);
-    //     const userNameParams = params.get("username");
-    //     const passwordParams = params.get("password");
-
-    //     setValue("userName", userNameParams || "")
-    //     setValue("password", passwordParams || "")
-    // })
-
     useEffect(() => {
         const userNameParams = searchParams.get("username"),
             passwordParams = searchParams.get("password");
 
         setValue("userName", userNameParams || "")
         setValue("password", passwordParams || "")
-    }, [])
+    }, [searchParams, setValue])
 
     return (
         <>
@@ -45,9 +35,9 @@ function FormYup() {
                 <div className="form-group">
                     <form onSubmit={onSubmit}>
                         <label className='username-label me-4 mt-5'>Username</label>
-                        <input className='w-50 ms-2' {...register("userName")} />
+                        <input className='w-50 ms-2' {...register("userName")} /><br />
                         <label className='password-label me-5 mt-3'>Password</label>
-                        <input className='w-50' {...register("password")} />
+                        <input className='w-50' {...register("password")} /><br />
                         <button
                             type="button"
                             onClick={() => {

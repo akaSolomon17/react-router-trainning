@@ -34,9 +34,13 @@
             margin: 0.3rem 0 0 0.1rem;
         }
         .couple-input{
-            .add-input-btn, .delete-input-btn{
+            .delete-input-btn{
                 font-size: 15px;
                 border-radius: 3px;
+                margin-bottom: 2rem;
+            }
+            div.form-floating{
+                height: 6rem;
             }
         }
         
