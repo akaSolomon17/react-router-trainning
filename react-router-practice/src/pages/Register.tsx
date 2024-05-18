@@ -38,8 +38,8 @@ type Inputs = {
 
 interface IDynamicInputs {
     text: string,
-    textReplace?: string | number
-}
+    textReplace: string
+}[]
 
 const emptyDynamicInputs: IDynamicInputs = {
     text: '',
@@ -70,7 +70,7 @@ const schema = yup
             .string()
             .required("Password is required!")
             .min(8, 'Password is too short - should be 8 chars minimum.')
-            .matches(regexPassword, 'Password can only contain Latin letters.'),
+            .matches(regexPassword, 'Password can must contain at least 1 letters.'),
 
         confirmPassword: yup
             .string()
@@ -96,27 +96,31 @@ const schema = yup
                 .object()
                 .shape({
                     text: yup
-                        .string()
-                        .required("Text field is required!"),
+                        .string().required("Please fill this text field!"),
                     textReplace: yup
-                        .mixed<string | number>()
-                        .test(function (value) { // bài tập làm = when
-                            if (!value || value === "") {
-                                return this.createError({ message: "Text Replace field is required!" })
-                            }
-                            else {
-                                const textReplaceInput = Number(value)
-                                const isNumber = !isNaN(textReplaceInput)
-                                if (!isNumber) {
-                                    return this.createError({ message: "Text Replace must be a number!" })
-                                } else {
-                                    if (textReplaceInput < 1 || textReplaceInput > 1000) {
-                                        return this.createError({ message: "Please enter a valid number!" })
-                                    }
-                                }
-                            }
-                            return true
+                        .number()
+                        .when('text', {
+                            is: (value: string) => value || value !== "",
+                            then: () => yup.number().typeError("textReplace must be a number!").min(1, "Value must be greater than 1").max(1000, "Value must be under 1000"),
+                            otherwise: () => yup.string().required("Please fill in text field first!")
                         })
+                    // .test(function (value) { // bài tập làm = when
+                    //     if (!value || value === "") {
+                    //         return this.createError({ message: "Text Replace field is required!" })
+                    //     }
+                    //     else {
+                    //         const textReplaceInput = Number(value)
+                    //         const isNumber = !isNaN(textReplaceInput)
+                    //         if (!isNumber) {
+                    //             return this.createError({ message: "Text Replace must be a number!" })
+                    //         } else {
+                    //             if (textReplaceInput < 1 || textReplaceInput > 1000) {
+                    //                 return this.createError({ message: "Please enter a valid number!" })
+                    //             }
+                    //         }
+                    //     }
+                    //     return true
+                    // })
                 })
             )
 
@@ -149,6 +153,7 @@ function Register() {
 
         reset();
     }
+    console.log(errors);
 
     useEffect(() => {
         setFocus("fullName")
@@ -166,12 +171,14 @@ function Register() {
                 />{' '}
                 <h5>Register Form</h5>
                 <form className='form-group d-flex flex-column w-50 mt-4' onSubmit={handleSubmit(submitHandler)}>
+
                     {/* Full Name */}
                     <div className="form-floating mb-3">
                         <input type="text" placeholder='Enter your Full Name.' className='form-control w-100'  {...register("fullName")} />
                         <label className='floatingInput'>Full Name *</label>
                         <p>{errors.fullName?.message}</p>
                     </div>
+
                     {/* Email */}
                     <div className="form-floating mb-3">
                         <input type="email" placeholder='Enter your Email.' className='form-control w-100'  {...register("email")} />
@@ -236,6 +243,7 @@ function Register() {
                     >
                         <LuPlusSquare />
                     </button>
+
                     {/* Dynamic input & validate */}
                     {fields.map((field, index) => (
                         <div key={field.id} className="couple-input mb-3 ">
@@ -262,6 +270,7 @@ function Register() {
                             </div>
                         </div>
                     ))}
+
                     {/* Submit */}
                     <button
                         className='w-100 mt-1'
