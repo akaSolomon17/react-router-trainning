@@ -18,7 +18,7 @@ function FormYup() {
     console.log(Object.fromEntries(searchParams));
 
     const onSubmit = () => {
-        console.log('Form submitted') // Chừa ra để làm logic cho submit
+        console.log('Form submitted!') // Chừa ra để làm logic cho submit
     }
 
     useEffect(() => {

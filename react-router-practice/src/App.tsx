@@ -16,9 +16,9 @@ import Loader from './components/Loading/Loader'
 import NotFound from './components/NotFound/NotFound'
 import FormYup from './pages/FormYup'
 import Register from './pages/Register'
+import UserInfo from './pages/User/UserInfo'
 
 function App() {
-
   return (
     <div>
       <Nav />
@@ -33,6 +33,7 @@ function App() {
             <Route path='/community' element={<LazyCommunityPage />} />
             <Route path='/react-hook-form' element={<FormYup />} />
             <Route path='/register' element={<Register />} />
+            <Route path='/user-info' element={<UserInfo />} />
             <Route path='*' element={<NotFound />} />
           </Routes>
         </React.Suspense>
